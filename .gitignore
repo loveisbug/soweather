@@ -4,6 +4,7 @@
 /config/app.php
 /tmp/*
 /logs/*
+.DS_Store
 
 # CakePHP 2
 
