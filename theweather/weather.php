@@ -19,7 +19,15 @@
 		}
 
 		function getCity($cityFile){
+			try{
 			$cityarr = file($cityFile, FILE_IGNORE_NEW_LINES);
+				if(empty($cityarr)){
+					throw new Exception('city is empty!');
+				}
+			} catch(Exception $e){
+				print 'error: '.$e->getMessage();
+				exit;
+			}
 			return $cityarr;
 		}
 
@@ -105,7 +113,7 @@
 							</span>
 						</span> 
 					<span class="icon">
-							<img src="Images/'.$val["HeWeather data service 3.0"][0]["now"]["cond"]["code"].'.png" alt="">
+							<img src="images/'.$val["HeWeather data service 3.0"][0]["now"]["cond"]["code"].'.png" alt="">
 					</span>
 					<span class="state">'
 						.$val["HeWeather data service 3.0"][0]["now"]["cond"]["txt"].'&nbsp;&nbsp;'
@@ -127,7 +135,7 @@
 
 							foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
 								$myimg = $valsmall["cond"]["code_d"];
-								echo  '<div><img src="Images/'.$myimg.'.png" alt=""></div>';
+								echo  '<div><img src="images/'.$myimg.'.png" alt=""></div>';
 						    }
 
 					echo '</li>
