@@ -5,7 +5,7 @@
 ## 配置
 ### apikey
 
-打开```about/config.sh```，把```{YOUR APIKEY}```替换成[你的百度apikey](http://apistore.baidu.com/astore/usercenter)。
+打开```about/config.sh```，把```{YOUR APIKEY}```替换成[你的百度apikey](http://apistore.baidu.com/astore/usercenter)。百度提供了一个调试通用apikey：```c159f080b611330ec18c1093bf6e85cb```，可以调用平台所有即用服务，我没有测试过。
 
 ### 城市列表
 
