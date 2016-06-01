@@ -11,6 +11,11 @@
 	<?php
 		error_reporting(0);
 
+		function microtime_float(){
+			list($usec, $sec) = explode(' ', microtime());
+			return ((float)$usec + (float)$sec);
+		}
+
 		function setEnv($envFile){
 			$env = file($envFile, FILE_IGNORE_NEW_LINES);
 			foreach($env as $line){
@@ -35,8 +40,10 @@
 		$cities = getCity('about/city.ini');
 		$chooseJson = array();
 
+		// $timestart = microtime_float();
 		foreach ($cities as $city)
 		{
+			// $ctimestart = microtime_float();
 			list($cityid, $cityname) = explode("=", $city);
 			$ch = curl_init();
 			$url = 'http://apis.baidu.com/heweather/weather/free?cityid='.$cityid;
@@ -47,7 +54,10 @@
 			$res = curl_exec($ch);
 			$jdata = json_decode($res, true);
 			array_push($chooseJson, $jdata);
+			// $ctiemend = microtime_float();
+			// echo 'city - '.$cityid.' elapsed: '.($ctiemend - $ctimestart).'<br>';
 		}
+		// echo 'all cities elapsed: '.(microtime_float() - $timestart).'<br>';
 	?>
 <style>
 	header{height:80px;border-bottom:2px solid #666;}
@@ -100,65 +110,49 @@
 	<section class="weather-list">
 		<div class="page-center">
 			<ul>
-
-				<?php
-
-					foreach ($chooseJson as $val){
-				echo '<li class="onecity">
+				<?php foreach ($chooseJson as $val){ ?>
+					<li class="onecity">
 					<h1><span class="city">
 							<span>
-							'
-							.$val["HeWeather data service 3.0"][0]["basic"]["city"].
-							'
+								<?php echo $val["HeWeather data service 3.0"][0]["basic"]["city"]; ?>
 							</span>
 						</span> 
 					<span class="icon">
-							<img src="images/'.$val["HeWeather data service 3.0"][0]["now"]["cond"]["code"].'.png" alt="">
+							<img src="images/<?php echo $val["HeWeather data service 3.0"][0]["now"]["cond"]["code"]; ?>.png" alt="">
 					</span>
-					<span class="state">'
-						.$val["HeWeather data service 3.0"][0]["now"]["cond"]["txt"].'&nbsp;&nbsp;'
-						.$val["HeWeather data service 3.0"][0]["now"]["tmp"].'°C
-					
-
+						<span class="state">
+							<?php echo $val["HeWeather data service 3.0"][0]["now"]["cond"]["txt"];?>&nbsp;&nbsp;
+							<?php echo $val["HeWeather data service 3.0"][0]["now"]["tmp"]; ?>°C
 					</span></h1>
 					<ol>
-
-
-						<li class="date-line">';
-							foreach ( $val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
+						<li class="date-line">
+							<?php foreach ( $val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
 												$mydate = substr($valsmall["date"], 5);
 							    	echo  '<div>'.$mydate.'</div>';
-								};
-					echo '</li>
-
-					<li class="table-icon">';
-
-							foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
+								} ?>
+						</li>
+						<li class="table-icon">
+							<?php foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
 								$myimg = $valsmall["cond"]["code_d"];
 								echo  '<div><img src="images/'.$myimg.'.png" alt=""></div>';
-						    }
-
-					echo '</li>
-						<li class="table-state">';
-							foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
-							    echo  '<div>'.$valsmall["cond"]["txt_d"].'</div>';
-						    }
-					echo '</li>
-						
-						<li class="Line-graph">
-							<div id="'.$val["HeWeather data service 3.0"][0]["basic"]["id"].'" style="height:130px;width:400px;background-color:#f5f5f5;" class="tubiao"></div>
-
+						    } ?>
 						</li>
-
+						<li class="table-state">
+							<?php foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
+							    echo  '<div>'.$valsmall["cond"]["txt_d"].'</div>';
+							} ?>
+						</li>
+						<li class="Line-graph">
+							<div id="<?php echo $val["HeWeather data service 3.0"][0]["basic"]["id"]; ?>" style="height:130px;width:400px;background-color:#f5f5f5;" class="tubiao"></div>
+						</li>
 					</ol>
-					<div class="weektep" style="display:none;">';
-							foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
+						<div class="weektep" style="display:none;">
+							<?php foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
 									echo  '<span>'.$valsmall["tmp"]["max"].'</span>';
-								}
-					echo '</div>
-				</li>';
-				 }
-				?>
+								} ?>
+						</div>
+					</li>
+				<?php } ?>
 			</ul>
 		</div>
 
