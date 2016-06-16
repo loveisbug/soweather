@@ -4,25 +4,22 @@
 	<meta charset="UTF-8">
 	<title>天气预报</title>
 	<link rel="stylesheet" type="text/css" href="about/base.css">
-	<link rel="stylesheet" type="text/css" href="about/weather.css">
+<!-- 	<link rel="stylesheet" type="text/css" href="about/weather.css"> -->
 	<script type="text/javascript" src="about/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="about/echarts.min.js"></script>
 </head>
 	<?php
 		error_reporting(0);
-
 		function microtime_float(){
 			list($usec, $sec) = explode(' ', microtime());
 			return ((float)$usec + (float)$sec);
 		}
-
 		function setEnv($envFile){
 			$env = file($envFile, FILE_IGNORE_NEW_LINES);
 			foreach($env as $line){
 				putenv($line);
 			}
 		}
-
 		function getCity($cityFile){
 			try{
 			$cityarr = file($cityFile, FILE_IGNORE_NEW_LINES);
@@ -35,11 +32,9 @@
 			}
 			return $cityarr;
 		}
-
 		setEnv('about/config.sh');
 		$cities = getCity('about/city.ini');
 		$chooseJson = array();
-
 		// $timestart = microtime_float();
 		foreach ($cities as $city)
 		{
@@ -54,6 +49,7 @@
 			$res = curl_exec($ch);
 			$jdata = json_decode($res, true);
 			array_push($chooseJson, $jdata);
+
 			// $ctiemend = microtime_float();
 			// echo 'city - '.$cityid.' elapsed: '.($ctiemend - $ctimestart).'<br>';
 		}
@@ -86,14 +82,12 @@
 	.weather-list .page-center li ol li.night-iocn div img{width:30px;position:absolute;left:50%;top:50%;transform: translate(-50%,-50%);}
 	.weather-list .page-center li ol li.night-state div{height:30px;line-height:30px;}
 	#main{border:none;}
-
 </style>
 <script type="text/javascript">
 	$(function() {
 		var myDate = new Date();
 		var myMonth = myDate.getMonth() + 1;
 		var myDay = myDate.getDate();
-
 		$('.center span').eq(0).html(myMonth+'月'+myDay+'日天气预报')
 	});
 </script>
@@ -151,6 +145,21 @@
 									echo  '<span>'.$valsmall["tmp"]["max"].'</span>';
 								} ?>
 						</div>
+
+						<div class="mosquitoes" style="display:none;">
+							<?php foreach ($val["HeWeather data service 3.0"][0]["daily_forecast"] as $valsmall){
+								$math=log10(($valsmall['tmp']['max']+$valsmall['tmp']['min'])*0.5+1)*19.051-log10($valsmall['tmp']['max']+1)*21.994-0.945*$valsmall['wind']['spd']/3.3+(substr($valsmall['astro']['ss'],0,2)-substr($valsmall['astro']['sr'],0,2)-1)*0.106/2+8.675;
+
+								 // echo '<span>'.(pow(10, $math)-1).'</span>';
+								  echo '<span>'.($math*10000).'</span>';
+									// echo '<span>平均'.(($valsmall['tmp']['max']+$valsmall['tmp']['min'])*0.5+1).'</span>';
+									// echo '<span>最高'.($valsmall['tmp']['max']+1).'</span>';
+									// echo '<span>风'.$valsmall['wind']['spd'].'</span>';
+									// echo '<span>日照'.(substr($valsmall['astro']['ss'],0,2)-substr($valsmall['astro']['sr'],0,2)-1).'</span>';
+									// echo '<span>'.(substr($valsmall['astro']['ss'],0,2)-substr($valsmall['astro']['sr'],0,2)-1).'</span>';
+									// echo  '<span>'.$valsmall["tmp"]["max"].'</span>';
+							    } ?>
+						</div>
 					</li>
 				<?php } ?>
 			</ul>
@@ -162,27 +171,25 @@
 </body>
 </html>
 	<script type="text/javascript">
-
  $('.onecity').each(function (index) {
         var mayarr = new Array()
-
+        var mosquitoes = new Array()
     for (var i = 0; i < 7; i++){
 		var member=$(this).find('.weektep span').eq(i).text();
+		var member2=$(this).find('.mosquitoes span').eq(i).text()/5000;
     	mayarr.push(member)
+    	mosquitoes.push(member2)
+		console.log(member2)
 	
 		};
 var thisid=$(this).find('.Line-graph div').attr('id');
-
 var myChart = echarts.init(document.getElementById(thisid));
-
     option = {
-
    	grid:  {
         top: 20,
         left : 27,
         right : 27,
         bottom : 15,
-
     },
     xAxis:  {
         type: 'category',
@@ -201,42 +208,44 @@ var myChart = echarts.init(document.getElementById(thisid));
 		        {
 		            name:'日温',
 		            type:'line',
-
 		            data:mayarr,
 		            itemStyle : { normal: {label : {show: true,
 		            								  formatter: "{c}°C"
 		            								}
+						        		  }
+						    	},
+		           
+		        },
 
+		        {
+		            name:'蚊子密度走势',
+		            type:'line',
+		            data:mosquitoes,
+		            itemStyle : { normal: {label : {show: true,
+		            								  formatter: "蚊"
+		            								}
 						        		  }
 						    	},
 
-		           
 		        }    
         	]
 };
         myChart.setOption(option);
-
 })
-
-
 //     })
-
 //     var myChart = echarts.init(document.getElementById('main'));
 //     var mayarr = new Array()
 //     for (var i = 0; i < 7; i++) {
 //     	member=$('#weektep span').eq(i).text();
 //     	mayarr.push(member)
     	
-
 //     };
 //     option = {
-
 //    	grid:  {
 //         top: 20,
 //         left : 27,
 //         right : 27,
 //         bottom : 15,
-
 //     },
 //     xAxis:  {
 //         type: 'category',
@@ -255,18 +264,14 @@ var myChart = echarts.init(document.getElementById(thisid));
 // 		        {
 // 		            name:'日温',
 // 		            type:'line',
-
 // 		            data:mayarr,
 // 		            itemStyle : { normal: {label : {show: true,
 // 		            								  formatter: "{c}°C"
 // 		            								}
-
 // 						        		  }
 // 						    	},
-
 // 		        }
 //         	]
 // };
 //         myChart.setOption(option);
-
 </script>
